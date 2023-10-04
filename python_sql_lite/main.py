@@ -46,7 +46,7 @@ def main(conn, question):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--query", type=str, default="Which customer purchased the most number of products?")
+    parser.add_argument("--query", type=str, default="When was the last time that PARTY INVITES FOOTBALL product was purchased?")
     args = parser.parse_args()
     conn = create_connection(DATABASE)
 

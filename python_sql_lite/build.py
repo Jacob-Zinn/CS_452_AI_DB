@@ -5,8 +5,15 @@ from schema import (sql_create_countries_table, sql_create_customers_table,
                     sql_create_invoices_table, sql_create_transactions_table, sql_create_products_table)
 
 
+
+from datetime import datetime
+
+def convert_to_date_format(date_string):
+    return datetime.strptime(date_string, "%m/%d/%y %H:%M").strftime('%Y-%m-%d')
+
+
 def insert_to_countries(conn):
-    df = pd.read_csv("online_retail.csv").head(1000)
+    df = pd.read_csv("online_retail.csv").head(15)
     countries = df[['Country']].drop_duplicates().dropna()
 
     for country in countries['Country'].tolist():
@@ -17,7 +24,7 @@ def insert_to_countries(conn):
 
 
 def insert_to_customers(conn):
-    df = pd.read_csv("online_retail.csv").head(1000)
+    df = pd.read_csv("online_retail.csv").head(15)
     customers = df[['CustomerID', 'Country']].drop_duplicates().dropna()
 
     for _, row in customers.iterrows():
@@ -29,7 +36,7 @@ def insert_to_customers(conn):
 
 
 def insert_to_invoices(conn):
-    df = pd.read_csv("online_retail.csv").head(1000)
+    df = pd.read_csv("online_retail.csv").head(15)
     invoices = df[['InvoiceNo', 'InvoiceDate', 'CustomerID']].drop_duplicates().dropna()
 
     for _, row in invoices.iterrows():
@@ -40,7 +47,7 @@ def insert_to_invoices(conn):
 
 
 def insert_to_products(conn):
-    df = pd.read_csv("online_retail.csv").head(1000)
+    df = pd.read_csv("online_retail.csv").head(15)
     products = df[['StockCode', 'Description']].drop_duplicates().dropna()
 
     for _, row in products.iterrows():
@@ -51,15 +58,18 @@ def insert_to_products(conn):
 
 
 def insert_to_transactions(conn):
-    df = pd.read_csv("online_retail.csv").head(1000)
+    df = pd.read_csv("online_retail.csv").head(15)
     transactions = df[['InvoiceNo', 'StockCode', 'Quantity', 'UnitPrice', 'InvoiceDate']]
 
     for _, row in transactions.iterrows():
+        # Convert InvoiceDate to SQL date format
+        formatted_date = convert_to_date_format(row['InvoiceDate'])
+
         # Linking to ProductID based on StockCode
         sql = ''' INSERT INTO Transactions(InvoiceNo, ProductID, Quantity, UnitPrice, TransactionDate) 
                   VALUES(?, (SELECT ProductID FROM Products WHERE StockCode = ?),?,?,?) '''
         cur = conn.cursor()
-        cur.execute(sql, (row['InvoiceNo'], row['StockCode'], row['Quantity'], row['UnitPrice'], row['InvoiceDate']))
+        cur.execute(sql, (row['InvoiceNo'], row['StockCode'], row['Quantity'], row['UnitPrice'], formatted_date))
     conn.commit()
 
 

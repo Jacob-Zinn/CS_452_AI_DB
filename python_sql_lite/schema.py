@@ -38,7 +38,7 @@ sql_create_transactions_table = """
         Quantity INTEGER,
         UnitPrice REAL,
         TotalPrice REAL AS (Quantity * UnitPrice),
-        TransactionDate TEXT,
+        TransactionDate DATE,
         FOREIGN KEY (InvoiceNo) REFERENCES Invoices(InvoiceNo),
         FOREIGN KEY (ProductID) REFERENCES Products(ProductID) 
     );
