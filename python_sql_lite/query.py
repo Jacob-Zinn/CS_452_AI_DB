@@ -30,7 +30,7 @@ if __name__ == "__main__":
     conn = create_connection(database)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--query", type=str, default="SELECT * FROM Products", help="SQL query to execute")
+    parser.add_argument("--query", type=str, default="SELECT * FROM Transactions", help="SQL query to execute")
     args = parser.parse_args()
 
     if args.query:

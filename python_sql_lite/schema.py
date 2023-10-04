@@ -22,27 +22,28 @@ sql_create_invoices_table = """
     );
 """
 
+sql_create_products_table = """
+    CREATE TABLE IF NOT EXISTS Products (
+        ProductID INTEGER PRIMARY KEY AUTOINCREMENT,
+        StockCode TEXT,
+        Description TEXT
+    );
+"""
+
 sql_create_transactions_table = """
     CREATE TABLE IF NOT EXISTS Transactions (
         TransactionID INTEGER PRIMARY KEY AUTOINCREMENT,
         InvoiceNo TEXT,
-        StockCode TEXT,
+        ProductID INTEGER,
         Quantity INTEGER,
         UnitPrice REAL,
         TotalPrice REAL AS (Quantity * UnitPrice),
         TransactionDate TEXT,
         FOREIGN KEY (InvoiceNo) REFERENCES Invoices(InvoiceNo),
-        FOREIGN KEY (StockCode) REFERENCES Products(StockCode)
-    );
-"""
-
-sql_create_products_table = """
-    CREATE TABLE IF NOT EXISTS Products (
-        StockCode TEXT PRIMARY KEY,
-        Description TEXT
+        FOREIGN KEY (ProductID) REFERENCES Products(ProductID) 
     );
 """
 
 def get_schema():
-    schema = f"{sql_create_countries_table}{sql_create_customers_table}{sql_create_invoices_table}{sql_create_transactions_table}{sql_create_products_table}"
+    schema = f"{sql_create_countries_table}{sql_create_customers_table}{sql_create_invoices_table}{sql_create_products_table}{sql_create_transactions_table}"
     return schema

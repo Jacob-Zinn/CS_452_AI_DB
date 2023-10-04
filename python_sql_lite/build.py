@@ -1,23 +1,12 @@
 import os
-
-import openpyxl as openpyxl
 import pandas as pd
 from db import create_table, create_connection
 from schema import (sql_create_countries_table, sql_create_customers_table,
                     sql_create_invoices_table, sql_create_transactions_table, sql_create_products_table)
 
 
-def select_all_from_products(conn):
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM Products")
-    rows = cur.fetchall()
-
-    for row in rows:
-        print(row)
-
-
 def insert_to_countries(conn):
-    df = pd.read_csv("Online Retail.csv").head(20)
+    df = pd.read_csv("Online Retail.csv").head(1000)
     countries = df[['Country']].drop_duplicates().dropna()
 
     for country in countries['Country'].tolist():
@@ -28,7 +17,7 @@ def insert_to_countries(conn):
 
 
 def insert_to_customers(conn):
-    df = pd.read_csv("Online Retail.csv").head(20)
+    df = pd.read_csv("Online Retail.csv").head(1000)
     customers = df[['CustomerID', 'Country']].drop_duplicates().dropna()
 
     for _, row in customers.iterrows():
@@ -40,7 +29,7 @@ def insert_to_customers(conn):
 
 
 def insert_to_invoices(conn):
-    df = pd.read_csv("Online Retail.csv").head(20)
+    df = pd.read_csv("Online Retail.csv").head(1000)
     invoices = df[['InvoiceNo', 'InvoiceDate', 'CustomerID']].drop_duplicates().dropna()
 
     for _, row in invoices.iterrows():
@@ -50,27 +39,27 @@ def insert_to_invoices(conn):
     conn.commit()
 
 
-def insert_to_transactions(conn):
-    df = pd.read_csv("Online Retail.csv").head(20)
-    transactions = df[['InvoiceNo', 'StockCode', 'Quantity', 'UnitPrice', 'InvoiceDate']]
-
-    for _, row in transactions.iterrows():
-        # total_price = row['Quantity'] * row['UnitPrice']
-        sql = ''' INSERT INTO Transactions(InvoiceNo, StockCode, Quantity, UnitPrice, TransactionDate) 
-                  VALUES(?,?,?,?,?) '''
-        cur = conn.cursor()
-        cur.execute(sql, (row['InvoiceNo'], row['StockCode'], row['Quantity'], row['UnitPrice'], row['InvoiceDate']))
-    conn.commit()
-
-
 def insert_to_products(conn):
-    df = pd.read_csv("Online Retail.csv").head(20)
+    df = pd.read_csv("Online Retail.csv").head(1000)
     products = df[['StockCode', 'Description']].drop_duplicates().dropna()
 
     for _, row in products.iterrows():
         sql = ''' INSERT INTO Products(StockCode, Description) VALUES(?,?) '''
         cur = conn.cursor()
         cur.execute(sql, (row['StockCode'], row['Description']))
+    conn.commit()
+
+
+def insert_to_transactions(conn):
+    df = pd.read_csv("Online Retail.csv").head(1000)
+    transactions = df[['InvoiceNo', 'StockCode', 'Quantity', 'UnitPrice', 'InvoiceDate']]
+
+    for _, row in transactions.iterrows():
+        # Linking to ProductID based on StockCode
+        sql = ''' INSERT INTO Transactions(InvoiceNo, ProductID, Quantity, UnitPrice, TransactionDate) 
+                  VALUES(?, (SELECT ProductID FROM Products WHERE StockCode = ?),?,?,?) '''
+        cur = conn.cursor()
+        cur.execute(sql, (row['InvoiceNo'], row['StockCode'], row['Quantity'], row['UnitPrice'], row['InvoiceDate']))
     conn.commit()
 
 
@@ -92,11 +81,11 @@ def main():
     create_table(conn, sql_create_invoices_table)
     insert_to_invoices(conn)
 
-    create_table(conn, sql_create_transactions_table)
-    insert_to_transactions(conn)
-
     create_table(conn, sql_create_products_table)
     insert_to_products(conn)
+
+    create_table(conn, sql_create_transactions_table)
+    insert_to_transactions(conn)
 
     print("Database build successful!")
 
