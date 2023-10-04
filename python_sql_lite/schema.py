@@ -16,7 +16,7 @@ sql_create_customers_table = """
 sql_create_invoices_table = """
     CREATE TABLE IF NOT EXISTS Invoices (
         InvoiceNo TEXT PRIMARY KEY,
-        InvoiceDate TEXT,
+        InvoiceDate DATE,
         CustomerID INTEGER,
         FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
     );

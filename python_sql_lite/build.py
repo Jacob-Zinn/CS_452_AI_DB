@@ -42,9 +42,12 @@ def insert_to_invoices(conn):
     invoices = df[['InvoiceNo', 'InvoiceDate', 'CustomerID']].drop_duplicates().dropna()
 
     for _, row in invoices.iterrows():
+        # Convert InvoiceDate to SQL date format
+        formatted_date = convert_to_date_format(row['InvoiceDate'])
+
         sql = ''' INSERT INTO Invoices(InvoiceNo, InvoiceDate, CustomerID) VALUES(?,?,?) '''
         cur = conn.cursor()
-        cur.execute(sql, (row['InvoiceNo'], row['InvoiceDate'], row['CustomerID']))
+        cur.execute(sql, (row['InvoiceNo'], formatted_date, row['CustomerID']))
     conn.commit()
 
 
@@ -55,7 +58,7 @@ def insert_to_products(conn):
     for _, row in products.iterrows():
         sql = ''' INSERT INTO Products(StockCode, Description) VALUES(?,?) '''
         cur = conn.cursor()
-        cur.execute(sql, (row['StockCode'], row['Description']))
+        cur.execute(sql, (row['StockCode'], row['Description'].strip()))
     conn.commit()
 
 
@@ -85,10 +88,14 @@ def main():
     conn = create_connection(database)
 
     # write dataset to sample database
+    sample_db_path = "sample_db.csv"
+    if os.path.exists(sample_db_path):
+        os.remove(sample_db_path)
+        print(f"'{sample_db_path}' has been deleted!")
     # Read the desired number of rows from the dataset
     df = pd.read_csv("online_retail.csv").head(SAMPLE_DATA_SIZE)
     # Write the sampled dataframe to a new CSV file
-    df.to_csv("sample_db.csv", index=False)
+    df.to_csv(sample_db_path, index=False)
 
     create_table(conn, sql_create_countries_table)
     insert_to_countries(conn)
