@@ -1,5 +1,3 @@
-# 
-
 sql_create_countries_table = """
     CREATE TABLE IF NOT EXISTS Countries (
         CountryID INTEGER PRIMARY KEY AUTOINCREMENT,
