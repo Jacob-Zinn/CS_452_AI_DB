@@ -1,41 +1,42 @@
 import argparse
-from db import create_connection
+import sqlite3
 
 
-def select_all_from_products(conn):
-    """
-    Query all rows in the tasks table
-    :param conn: the Connection object
-    :return:
-    """
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM Products")
+def create_connection(db_file):
+    conn = None
+    try:
+        conn = sqlite3.connect(db_file)
+        return conn
+    except sqlite3.Error as e:
+        print(e)
+    return conn
 
-    rows = cur.fetchall()
-
-    for row in rows:
-        print(row)
 
 def select_from_table(conn, query):
-    """
-    Query all rows in the tasks table
-    :param conn: the Connection object
-    :return:
-    """
-    cur = conn.cursor()
-    cur.execute(query)
+    try:
+        cur = conn.cursor()
+        cur.execute(query)
 
-    rows = cur.fetchall()
+        rows = cur.fetchall()
 
-    for row in rows:
-        print(row)
+        for row in rows:
+            print(row)
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+
 
 if __name__ == "__main__":
     database = "./pythonsqlite.db"
     conn = create_connection(database)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--query", type=str, help="SELECT * FROM menu where unit_price >=55.0")
+    parser.add_argument("--query", type=str, default="SELECT * FROM Products", help="SQL query to execute")
     args = parser.parse_args()
-    print(f"Executing query: {args.query}")
-    select_from_table(conn, args.query)
+
+    if args.query:
+        print(f"Executing query: {args.query}")
+        select_from_table(conn, args.query)
+    else:
+        print("No query provided. Please use the --query parameter.")
+
+    print("testing")
