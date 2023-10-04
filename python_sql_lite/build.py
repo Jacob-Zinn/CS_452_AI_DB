@@ -6,7 +6,7 @@ from schema import (sql_create_countries_table, sql_create_customers_table,
 
 
 def insert_to_countries(conn):
-    df = pd.read_csv("Online Retail.csv").head(1000)
+    df = pd.read_csv("online_retail.csv").head(1000)
     countries = df[['Country']].drop_duplicates().dropna()
 
     for country in countries['Country'].tolist():
@@ -17,7 +17,7 @@ def insert_to_countries(conn):
 
 
 def insert_to_customers(conn):
-    df = pd.read_csv("Online Retail.csv").head(1000)
+    df = pd.read_csv("online_retail.csv").head(1000)
     customers = df[['CustomerID', 'Country']].drop_duplicates().dropna()
 
     for _, row in customers.iterrows():
@@ -29,7 +29,7 @@ def insert_to_customers(conn):
 
 
 def insert_to_invoices(conn):
-    df = pd.read_csv("Online Retail.csv").head(1000)
+    df = pd.read_csv("online_retail.csv").head(1000)
     invoices = df[['InvoiceNo', 'InvoiceDate', 'CustomerID']].drop_duplicates().dropna()
 
     for _, row in invoices.iterrows():
@@ -40,7 +40,7 @@ def insert_to_invoices(conn):
 
 
 def insert_to_products(conn):
-    df = pd.read_csv("Online Retail.csv").head(1000)
+    df = pd.read_csv("online_retail.csv").head(1000)
     products = df[['StockCode', 'Description']].drop_duplicates().dropna()
 
     for _, row in products.iterrows():
@@ -51,7 +51,7 @@ def insert_to_products(conn):
 
 
 def insert_to_transactions(conn):
-    df = pd.read_csv("Online Retail.csv").head(1000)
+    df = pd.read_csv("online_retail.csv").head(1000)
     transactions = df[['InvoiceNo', 'StockCode', 'Quantity', 'UnitPrice', 'InvoiceDate']]
 
     for _, row in transactions.iterrows():
