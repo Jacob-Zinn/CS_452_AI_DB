@@ -8,12 +8,14 @@ from schema import (sql_create_countries_table, sql_create_customers_table,
 
 from datetime import datetime
 
+SAMPLE_DATA_SIZE = 15
+
 def convert_to_date_format(date_string):
     return datetime.strptime(date_string, "%m/%d/%y %H:%M").strftime('%Y-%m-%d')
 
 
 def insert_to_countries(conn):
-    df = pd.read_csv("online_retail.csv").head(15)
+    df = pd.read_csv("online_retail.csv").head(SAMPLE_DATA_SIZE)
     countries = df[['Country']].drop_duplicates().dropna()
 
     for country in countries['Country'].tolist():
@@ -24,7 +26,7 @@ def insert_to_countries(conn):
 
 
 def insert_to_customers(conn):
-    df = pd.read_csv("online_retail.csv").head(15)
+    df = pd.read_csv("online_retail.csv").head(SAMPLE_DATA_SIZE)
     customers = df[['CustomerID', 'Country']].drop_duplicates().dropna()
 
     for _, row in customers.iterrows():
@@ -36,7 +38,7 @@ def insert_to_customers(conn):
 
 
 def insert_to_invoices(conn):
-    df = pd.read_csv("online_retail.csv").head(15)
+    df = pd.read_csv("online_retail.csv").head(SAMPLE_DATA_SIZE)
     invoices = df[['InvoiceNo', 'InvoiceDate', 'CustomerID']].drop_duplicates().dropna()
 
     for _, row in invoices.iterrows():
@@ -47,7 +49,7 @@ def insert_to_invoices(conn):
 
 
 def insert_to_products(conn):
-    df = pd.read_csv("online_retail.csv").head(15)
+    df = pd.read_csv("online_retail.csv").head(SAMPLE_DATA_SIZE)
     products = df[['StockCode', 'Description']].drop_duplicates().dropna()
 
     for _, row in products.iterrows():
@@ -58,7 +60,7 @@ def insert_to_products(conn):
 
 
 def insert_to_transactions(conn):
-    df = pd.read_csv("online_retail.csv").head(15)
+    df = pd.read_csv("online_retail.csv").head(SAMPLE_DATA_SIZE)
     transactions = df[['InvoiceNo', 'StockCode', 'Quantity', 'UnitPrice', 'InvoiceDate']]
 
     for _, row in transactions.iterrows():
@@ -81,6 +83,12 @@ def main():
         print(f"'{database}' has been deleted!")
 
     conn = create_connection(database)
+
+    # write dataset to sample database
+    # Read the desired number of rows from the dataset
+    df = pd.read_csv("online_retail.csv").head(SAMPLE_DATA_SIZE)
+    # Write the sampled dataframe to a new CSV file
+    df.to_csv("sample_db.csv", index=False)
 
     create_table(conn, sql_create_countries_table)
     insert_to_countries(conn)
