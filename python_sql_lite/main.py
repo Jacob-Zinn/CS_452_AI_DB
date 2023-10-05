@@ -57,6 +57,8 @@ if __name__ == "__main__":
 
 # DEMO PRMPTS:
 # SUCCESS
+# Question: Which country spent the most money with our company?
+# Question: When was the last time that PARTY INVITES FOOTBALL was purchased? How many were purchased then?
 
 # FAILED
 # Which country purchased the most items in the month of September and how much was the total spend?
