@@ -3,7 +3,7 @@ import openai
 import json
 
 from query import select_from_table
-from schema import get_schema
+from schema import get_schema, get_schema_in_md
 from db import create_connection
 
 DATABASE = "./pythonsqlite.db"
@@ -17,19 +17,21 @@ def main(conn, question):
     print(f"Question: {question}")
 
     prompt = f"""
+    Using the SQL schema provided below, write a SQL query to answer this question: {question}. Format your response as syntactically correct SQL.
     
-    Given the following SQL Schema:{get_schema()}
-    Write a SQL query to answer this question: {question}
-    
+    SQL Schema:
+    {get_schema_in_md()}
+
+    SQL Query:
     """
 
     messages=[
-        {"role": "system", "content": "You are a helpful assistant that returns only syntactically correct SQL."},
+        {"role": "system", "content": "You are a helpful assistant that responds with only syntactically correct SQL."},
         {"role": "user", "content": prompt},
     ]
 
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo", # "gpt-4", #
         messages=messages,
         temperature=0,
         max_tokens=600
@@ -46,9 +48,15 @@ def main(conn, question):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--query", type=str, default="When was the last time that PARTY INVITES FOOTBALL product was purchased?")
+    parser.add_argument("--query", type=str, default="Which country purchased the most items?")
     args = parser.parse_args()
     conn = create_connection(DATABASE)
 
     main(conn, question=args.query)
 
+
+# DEMO PRMPTS:
+# SUCCESS
+
+# FAILED
+# Which country purchased the most items in the month of September and how much was the total spend?

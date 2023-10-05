@@ -47,3 +47,10 @@ sql_create_transactions_table = """
 def get_schema():
     schema = f"{sql_create_countries_table}{sql_create_customers_table}{sql_create_invoices_table}{sql_create_products_table}{sql_create_transactions_table}"
     return schema
+
+
+def get_schema_in_md():
+    # load markdown as text from schema.md
+    with open("schema.md", "r") as f:
+        schema = f.read()
+    return schema

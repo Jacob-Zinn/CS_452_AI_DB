@@ -1,57 +1,53 @@
+---
+
+### Countries Table
+
+| Field Name  | Data Type | Key        | Constraints |
+|-------------|-----------|------------|-------------|
+| CountryID   | INTEGER   | PRIMARY KEY| AUTOINCREMENT |
+| CountryName | TEXT      |            | UNIQUE      |
 
 ---
 
-### Database Schema
+### Customers Table
+
+| Field Name  | Data Type | Key        | Constraints                                  |
+|-------------|-----------|------------|----------------------------------------------|
+| CustomerID  | INTEGER   | PRIMARY KEY|                                              |
+| CountryID   | INTEGER   | FOREIGN KEY| REFERENCES Countries(CountryID)              |
 
 ---
 
-#### 1. **Countries**
+### Invoices Table
 
-| Field       | Type    | Description                                        |
-|-------------|---------|----------------------------------------------------|
-| `CountryID` | Integer | Primary Key, Auto-incremented. Unique ID for each country. |
-| `CountryName` | Text  | Unique. Name of the country.                      |
-
----
-
-#### 2. **Products**
-
-| Field        | Type  | Description                                         |
-|--------------|-------|-----------------------------------------------------|
-| `StockCode`  | Text  | Primary Key. Unique code for each product.           |
-| `Description`| Text  | Description or name of the product.                  |
+| Field Name   | Data Type | Key        | Constraints                                  |
+|--------------|-----------|------------|----------------------------------------------|
+| InvoiceNo    | TEXT      | PRIMARY KEY|                                              |
+| InvoiceDate  | DATE      |            |                                              |
+| CustomerID   | INTEGER   | FOREIGN KEY| REFERENCES Customers(CustomerID)             |
 
 ---
 
-#### 3. **Customers**
+### Products Table
 
-| Field        | Type    | Description                                         |
-|--------------|---------|-----------------------------------------------------|
-| `CustomerID` | Integer | Primary Key. Unique ID for each customer.            |
-| `CountryID`  | Integer | Foreign Key referencing `Countries`. Country of the customer. |
-
----
-
-#### 4. **Invoices**
-
-| Field         | Type    | Description                                           |
-|---------------|---------|-------------------------------------------------------|
-| `InvoiceNo`   | Text    | Primary Key. Unique number for each invoice.           |
-| `InvoiceDate` | Text    | Date of the invoice.                                   |
-| `CustomerID`  | Integer | Foreign Key referencing `Customers`. Customer for the invoice. |
+| Field Name   | Data Type | Key        | Constraints |
+|--------------|-----------|------------|-------------|
+| ProductID    | INTEGER   | PRIMARY KEY| AUTOINCREMENT |
+| StockCode    | TEXT      |            |             |
+| Description  | TEXT      |            |             |
 
 ---
 
-#### 5. **Transactions**
+### Transactions Table
 
-| Field           | Type    | Description                                         |
-|-----------------|---------|-----------------------------------------------------|
-| `TransactionID` | Integer | Primary Key, Auto-incremented. Unique ID for each transaction.|
-| `InvoiceNo`     | Text    | Foreign Key referencing `Invoices`. Invoice number for the transaction.|
-| `StockCode`     | Text    | Foreign Key referencing `Products`. Product code for the transaction.|
-| `Quantity`      | Integer | Quantity of the product.                             |
-| `UnitPrice`     | Real    | Price per unit of the product.                       |
-| `TotalPrice`    | Real    | Calculated as `Quantity * UnitPrice`. Total price of the transaction.|
-| `TransactionDate`| Text   | Date of the transaction.                             |
+| Field Name     | Data Type | Key        | Constraints                                     |
+|----------------|-----------|------------|-------------------------------------------------|
+| TransactionID  | INTEGER   | PRIMARY KEY| AUTOINCREMENT                                   |
+| InvoiceNo      | TEXT      | FOREIGN KEY| REFERENCES Invoices(InvoiceNo)                  |
+| ProductID      | INTEGER   | FOREIGN KEY| REFERENCES Products(ProductID)                  |
+| Quantity       | INTEGER   |            |                                                 |
+| UnitPrice      | REAL      |            |                                                 |
+| TotalPrice     | REAL      |            | AS (Quantity * UnitPrice)                       |
+| TransactionDate| DATE      |            |                                                 |
 
 ---
