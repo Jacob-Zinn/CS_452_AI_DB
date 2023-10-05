@@ -16,6 +16,13 @@ def main(conn, question):
     openai.api_key = auth['api_key']
     print(f"Question: {question}")
 
+    old_prompt = f"""
+
+        Given the following SQL schema: {get_schema()}
+        Write a SQL query to answer this question: {question}
+
+    """
+
     prompt = f"""
     Using the SQL schema provided below, write a SQL query to answer this question: {question}. Format your response as syntactically correct SQL.
     
@@ -27,7 +34,7 @@ def main(conn, question):
 
     messages=[
         {"role": "system", "content": "You are a helpful assistant that responds with only syntactically correct SQL."},
-        {"role": "user", "content": prompt},
+        {"role": "user", "content": old_prompt},
     ]
 
     response = openai.ChatCompletion.create(
