@@ -7,6 +7,7 @@ from schema import get_schema, get_schema_in_md
 from db import create_connection
 
 DATABASE = "./pythonsqlite.db"
+ENV = 2
 
 def main(conn, question):
     with open("auth.json", "r") as f:
@@ -16,7 +17,7 @@ def main(conn, question):
     openai.api_key = auth['api_key']
     print(f"Question: {question}")
 
-    old_prompt = f"""
+    promptt = f"""
 
         Given the following SQL schema: {get_schema()}
         Write a SQL query to answer this question: {question}
@@ -32,9 +33,9 @@ def main(conn, question):
     SQL Query:
     """
 
-    messages=[
+    messages = [
         {"role": "system", "content": "You are a helpful assistant that responds with only syntactically correct SQL."},
-        {"role": "user", "content": old_prompt},
+        {"role": "user", "content": prompt if ENV == 2 else promptt},
     ]
 
     response = openai.ChatCompletion.create(
@@ -54,8 +55,16 @@ def main(conn, question):
 
 
 if __name__ == "__main__":
+    user_request = "Which country purchased the most items in the month of September and how much was the total spend?"
+    if ENV == 0:
+        user_request = "Which country spent the most money with our company?"
+    elif ENV == 1:
+        user_request = "When was the last time that PARTY INVITES FOOTBALL was purchased? How many were purchased then?"
+    elif ENV == 2:
+        user_request = "Which country purchased the most items in the month of September and how much was the total spend?"
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--query", type=str, default="Which country purchased the most items?")
+    parser.add_argument("--query", type=str, default=user_request)
     args = parser.parse_args()
     conn = create_connection(DATABASE)
 
